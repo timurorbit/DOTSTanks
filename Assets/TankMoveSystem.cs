@@ -23,9 +23,10 @@ public partial struct TankMoveSystem : ISystem
     public void OnUpdate(ref SystemState state)
     {
         float deltaTime = Time.deltaTime;
+        float3 targetLocation = new float3(5,5,5);
         foreach (var transform in SystemAPI.Query<RefRW<LocalTransform>>().WithAll<TankData>())
         {
-            transform.ValueRW.Position += 0.05f * math.forward(transform.ValueRW.Rotation);
+            transform.ValueRW.Position += 0.05f * deltaTime * (targetLocation - transform.ValueRO.Position);
         }
     }
 
