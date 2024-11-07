@@ -21,14 +21,17 @@ public partial struct TankMoveSystem : ISystem
     public void OnUpdate(ref SystemState state)
     {
         float deltaTime = Time.deltaTime;
+        float speed = 0.5f;
+        float rotationalSpeed = 0.5f;
         float3 targetLocation = new float3(5, 0, 5);
         foreach (var transform in SystemAPI.Query<RefRW<LocalTransform>>().WithAll<TankData>())
         {
             float3 heading = targetLocation - transform.ValueRO.Position;
             heading.y = 0;
 
-            
-            transform.ValueRW.Rotation.value = quaternion.LookRotation(heading, math.up()).value;
+            quaternion tragetDirection = quaternion.LookRotation(heading, math.up());
+            transform.ValueRW.Rotation =
+                math.slerp(transform.ValueRW.Rotation.value, tragetDirection.value, deltaTime * rotationalSpeed);
             
             transform.ValueRW.Position += 0.5f * deltaTime * math.forward(transform.ValueRW.Rotation.value);
         }
